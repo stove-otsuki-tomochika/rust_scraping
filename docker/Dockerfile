@@ -9,4 +9,4 @@ COPY --chown=rust:rust /app /app
 
 USER rust
 
-CMD ["bash"]
+CMD ["cargo", "run"]
