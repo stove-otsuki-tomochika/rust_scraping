@@ -1,6 +1,12 @@
 FROM rust:1.78.0-slim
 
+# ユーザー,グループを作成
+RUN groupadd -g 1000 rust && useradd -u 1000 -g rust rust
+RUN mkdir /app && chown rust:rust /app
+
 WORKDIR /app
-COPY /app /app
+COPY --chown=rust:rust /app /app
+
+USER rust
 
 CMD ["cargo", "run"]
