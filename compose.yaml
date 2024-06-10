@@ -6,7 +6,6 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - ./app:/app
-      - trick:/app/target
     tty: true
 
 volumes:
