@@ -5,8 +5,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     volumes:
-      - ./app:/app
+      - type: bind
+        source: "./app"
+        target: "/app"
     tty: true
-
-volumes:
-  trick:
