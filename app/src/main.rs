@@ -1,3 +1,5 @@
+mod external_crate_test;
+
 use std::io::{self, BufRead};
 
 fn main() {
