@@ -1,8 +1,7 @@
-pub mod request;
 mod scrape;
 
 use std::io::{self, BufRead};
-use request::get_entire_html_tag_text;
+use scrape::request::get_entire_html_tag_text;
 
 #[tokio::main]
 async fn main() {

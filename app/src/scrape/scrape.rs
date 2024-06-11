@@ -1,9 +1,9 @@
 use scraper::{Html, Selector};
+use super::request::get_entire_html_tag_text;
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::request::get_entire_html_tag_text;
 
     #[tokio::test]
     async fn sample_test() {
