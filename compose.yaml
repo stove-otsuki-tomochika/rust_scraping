@@ -1,6 +1,6 @@
 services:
-  web:
-    image: web
+  web-dev:
+    image: web-dev
     build: 
       context: .
       dockerfile: docker/Dockerfile

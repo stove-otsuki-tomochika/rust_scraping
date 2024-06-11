@@ -1,6 +1,6 @@
 services:
   web:
-    image: web-prod
+    image: web
     build: 
       context: .
       dockerfile: docker/Dockerfile
