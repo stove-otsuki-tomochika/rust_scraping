@@ -1,13 +1,12 @@
 services:
-  web:
-    image: web
+  web-dev:
+    image: web-dev
     build: 
       context: .
       dockerfile: docker/Dockerfile
+      target: dev
     volumes:
-      - ./app:/app
-      - trick:/app/target
+      - type: bind
+        source: "./app"
+        target: "/app"
     tty: true
-
-volumes:
-  trick:

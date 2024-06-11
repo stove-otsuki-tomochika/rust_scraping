@@ -1,0 +1,8 @@
+services:
+  web:
+    image: web
+    build: 
+      context: .
+      dockerfile: docker/Dockerfile
+      target: prod
+    tty: true
