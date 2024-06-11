@@ -1,7 +1,7 @@
 use reqwest;
 use anyhow::{Context, Result};
 
-pub async fn get_entire_html_tag_text(url: String) -> Result<String> {
+pub async fn get_entire_html_tag_text(url: &str) -> Result<String> {
     let rc = reqwest::get(url).await.context("スクレイピング対象サイトのアクセスに失敗しました。")?;
     let contents = rc.text().await.context("html タグ -> String の変換に失敗しました。")?;
     Ok(contents)
@@ -14,8 +14,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_fetch_entire_html_tag() -> Result<()> {
-        let entire_html_tag = get_entire_html_tag_text("https://example.com/"
-            .to_string()).await.
+        let entire_html_tag = get_entire_html_tag_text("https://example.com/").await.
             context("スクレイピング対象サイトの html タグが取得できませんでした。")?;
 
         // 開始タグと終了タグが取得できているか確認することで、

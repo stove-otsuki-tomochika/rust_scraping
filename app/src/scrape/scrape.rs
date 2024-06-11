@@ -7,7 +7,7 @@ mod tests {
 
     #[tokio::test]
     async fn sample_test() {
-        let html = get_entire_html_tag_text("https://example.com/".to_string()).await.expect("スクレイピング対象サイトのアクセスに失敗しました。");
+        let html = get_entire_html_tag_text("https://example.com/").await.expect("スクレイピング対象サイトのアクセスに失敗しました。");
         
         let fragment = Html::parse_fragment(&html);
         let selector = Selector::parse("h1").unwrap();

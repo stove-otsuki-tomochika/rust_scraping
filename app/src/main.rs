@@ -20,6 +20,6 @@ async fn main() {
             break;
         }
         println!("あなたが入力したのはこれだ！-> {}", input.trim());
-        println!("ついでにスクレイピングしてみるね！ -> {:#}", get_entire_html_tag_text("https://example.com/".to_string()).await.expect("スクレイピング対象サイトのアクセスに失敗しました。"));
+        println!("ついでにスクレイピングしてみるね！ -> {:#}", get_entire_html_tag_text("https://example.com/").await.expect("スクレイピング対象サイトのアクセスに失敗しました。"));
     }
 }
