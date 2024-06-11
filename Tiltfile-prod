@@ -1,0 +1,2 @@
+docker_compose('compose-prod.yaml')
+docker_build('web', context='.', dockerfile='docker/Dockerfile', target='prod')

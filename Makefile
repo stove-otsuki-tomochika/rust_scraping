@@ -1,5 +1,7 @@
 up:
 	tilt up
+up-prod:
+	tilt up --file Tiltfile-prod
 down:
 	tilt down
 ps:
