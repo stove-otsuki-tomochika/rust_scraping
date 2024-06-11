@@ -1,19 +1,27 @@
+use reqwest;
+use anyhow::{Context, Result};
+
+async fn get_entire_html_tag_text(url: String) -> Result<String> {
+    let rc = reqwest::get(url).await.context("スクレイピング対象サイトのアクセスに失敗しました。")?;
+    let contents = rc.text().await.context("html タグ -> String の変換に失敗しました。")?;
+    Ok(contents)
+}
+
 #[cfg(test)]
 mod tests {
-    use reqwest;
     use tokio;
-    use anyhow::{Context, Result};
+    use super::*;
 
     #[tokio::test]
     async fn test_fetch_entire_html_tag() -> Result<()> {
-        let url = "https://example.com/";
-        let rc = reqwest::get(url).await.context("スクレイピング対象サイトの html タグ(全体)を取得できませんでした。")?;
-        let contents = rc.text().await.context("html タグ -> String の変換に失敗しました")?;
+        let entire_html_tag = get_entire_html_tag_text("https://example.com/"
+            .to_string()).await.
+            context("スクレイピング対象サイトの html タグが取得できませんでした。")?;
 
         // 開始タグと終了タグが取得できているか確認することで、
         // 疑似的に全体が取得出来たことを確認する
-        assert!(contents.contains("<html>"),"html 開始タグが取得できませんでした。");
-        assert!(contents.contains("</html>"),"html 閉じタグが取得できませんでした。");
+        assert!(entire_html_tag.contains("<html>"),"html 開始タグが存在していません。");
+        assert!(entire_html_tag.contains("</html>"),"html 閉じタグが存在していません。");
         Ok(())
     }
 }
