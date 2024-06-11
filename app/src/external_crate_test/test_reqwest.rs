@@ -1,7 +1,13 @@
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn sample_test() {
-        assert_eq!(2 + 2, 4);
+    use reqwest;
+    use tokio;
+
+    #[tokio::test]
+    async fn test_fetch_entire_html_tag() {
+        let url = "https://example.com/";
+        let rc = reqwest::get(url).await.unwrap();
+        let contents = rc.text().await.unwrap();
+        println!("{:#?}", contents);
     }
 }
