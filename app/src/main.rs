@@ -1,4 +1,4 @@
-mod request;
+pub mod request;
 mod scrape;
 
 use std::io::{self, BufRead};
