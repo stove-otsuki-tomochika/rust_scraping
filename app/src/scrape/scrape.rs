@@ -2,7 +2,7 @@ use scraper::{Html, Selector};
 use anyhow::{anyhow, Context,Result};
 use super::request::get_entire_html_tag_text;
 
-async fn get_html_fragment_from_url(url: &str) -> Result<Html> {
+async fn get_html(url: &str) -> Result<Html> {
     let html = get_entire_html_tag_text(url)
         .await
         .context("スクレイピング対象サイトのアクセスに失敗しました。")?;
@@ -19,8 +19,8 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn sample_test() -> Result<()> {
-        let fragment = get_html_fragment_from_url("https://example.com/").await?;
+    async fn test_h1_extraction_with_get_html_and_generate_selector() -> Result<()> {
+        let fragment = get_html("https://example.com/").await?;
         let selector = generate_selector("h1")?;
 
         for element in fragment.select(&selector) {
