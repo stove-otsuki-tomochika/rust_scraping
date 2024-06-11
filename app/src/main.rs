@@ -1,4 +1,5 @@
 mod request;
+mod scrape;
 
 use std::io::{self, BufRead};
 use request::get_entire_html_tag_text;
