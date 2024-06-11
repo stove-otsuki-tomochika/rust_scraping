@@ -2,14 +2,14 @@ use scraper::{Html, Selector};
 use anyhow::{anyhow, Context,Result};
 use super::request::get_entire_html_tag_text;
 
-async fn get_html(url: &str) -> Result<Html> {
+pub async fn get_html(url: &str) -> Result<Html> {
     let html = get_entire_html_tag_text(url)
         .await
         .context("スクレイピング対象サイトのアクセスに失敗しました。")?;
     Ok(Html::parse_fragment(&html))
 }
 
-fn generate_selector(css_selector: &str) -> Result<Selector> {
+pub fn generate_selector(css_selector: &str) -> Result<Selector> {
     Selector::parse(css_selector)
         .map_err(|e| anyhow!("CSS セレクタのパースに失敗しました: {}", e))
 }

@@ -1,7 +1,7 @@
 mod scrape;
 
 use std::io::{self, BufRead};
-use scrape::request::get_entire_html_tag_text;
+use scrape::scrape::{get_html, generate_selector};
 
 #[tokio::main]
 async fn main() {
@@ -16,10 +16,17 @@ async fn main() {
             .expect("入力値が読み取れませんでした。");
 
         if input.trim() == "exit" {
-            println!("終了します。");
+            println!("終了するよ！バイバイ！");
             break;
         }
         println!("あなたが入力したのはこれだ！-> {}", input.trim());
-        println!("ついでにスクレイピングしてみるね！ -> {:#}", get_entire_html_tag_text("https://example.com/").await.expect("スクレイピング対象サイトのアクセスに失敗しました。"));
+        println!("ついでにスクレイピングしてみるね！");
+        let fragment = get_html("https://example.com/").await.expect("HTML のデータ取得に失敗しました。");
+        let selector = generate_selector("h1").expect("h1 タグのセレクタの生成に失敗しました。");
+
+        for element in fragment.select(&selector) {
+            // example.com の h1 タグの中身は "Example Domain" なので、これを検証する
+            println!("{}", element.inner_html());
+        }
     }
 }
