@@ -1,8 +1,10 @@
 mod request;
 
 use std::io::{self, BufRead};
+use request::get_entire_html_tag_text;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     loop {
         let mut input = String::new();
 
@@ -18,5 +20,6 @@ fn main() {
             break;
         }
         println!("あなたが入力したのはこれだ！-> {}", input.trim());
+        println!("ついでにスクレイピングしてみるね！ -> {:#}", get_entire_html_tag_text("https://example.com/".to_string()).await.expect("スクレイピング対象サイトのアクセスに失敗しました。"));
     }
 }

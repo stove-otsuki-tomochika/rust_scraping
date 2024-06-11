@@ -1,7 +1,7 @@
 use reqwest;
 use anyhow::{Context, Result};
 
-async fn get_entire_html_tag_text(url: String) -> Result<String> {
+pub async fn get_entire_html_tag_text(url: String) -> Result<String> {
     let rc = reqwest::get(url).await.context("スクレイピング対象サイトのアクセスに失敗しました。")?;
     let contents = rc.text().await.context("html タグ -> String の変換に失敗しました。")?;
     Ok(contents)
