@@ -57,6 +57,36 @@ impl<T:BufRead> CliState<T> {
     pub fn new(stdin:T) -> Self {
         CliState::Waiting(Waiting{input: String::new(), stdin})
     }
+
+    pub fn update(self) -> CliState<T> {
+        match self {
+            CliState::Waiting(waiting) => {
+                return CliState::Running(
+                    Running {
+                        input: waiting.input,
+                        stdin: waiting.stdin
+                    }
+                )
+            }
+            CliState::Running(running) => {
+                return CliState::Running(
+                    Running {
+                        input: running.input,
+                        stdin: running.stdin
+                    }
+                )
+            }
+            CliState::Exit(exit) => {
+                // TODO エラーにするべき
+                return CliState::Running(
+                    Running {
+                        input: exit.input,
+                        stdin: exit.stdin
+                    }
+                )
+            }
+        }
+    }
 }
 
 trait State {}
@@ -77,7 +107,6 @@ struct Exit<T:BufRead> {
     stdin: T
 }
 impl<T:BufRead> State for Exit<T> {}
-
 
 #[cfg(test)]
 mod tests {
@@ -102,6 +131,24 @@ mod tests {
             }
             CliState::Exit(_) => {
                 Err(anyhow!("CliState::Exit"))
+            }
+        }
+    }
+
+    #[test]
+    fn test_have_running_state_called_update_with_waiting() -> Result<()> {
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let state = CliState::new(stdin_mock).update();
+
+        match state {
+            CliState::Waiting(_) => {
+                Err(anyhow!("state「Running」を期待しましたが Waiting でした"))
+            }
+            CliState::Running(_) => {
+                Ok(())
+            }
+            CliState::Exit(_) => {
+                Err(anyhow!("state「Running」を期待しましたが Exit でした"))
             }
         }
     }
