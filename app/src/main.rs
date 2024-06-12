@@ -2,7 +2,7 @@ mod scrape;
 mod cli;
 
 use std::io;
-use cli::open_stdin;
+use cli::io::open_stdin;
 use scrape::scrape::{get_html, generate_selector};
 use cli::state::CliState;
 
