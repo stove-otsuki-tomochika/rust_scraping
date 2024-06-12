@@ -8,17 +8,17 @@ use scrape::scrape::{get_html, generate_selector};
 #[tokio::main]
 async fn main() {
     loop {
-        let mut input = String::new();
+        let mut input_from_user = String::new();
 
         println!("何か入力して。終了するときは「exit」って入れてね:");
 
-        open_stdin(io::stdin().lock(),&mut input);
+        open_stdin(io::stdin().lock(),&mut input_from_user);
 
-        if input.trim() == "exit" {
+        if input_from_user.trim() == "exit" {
             println!("終了するよ！バイバイ！");
             break;
         }
-        println!("あなたが入力したのはこれだ！-> {}", input.trim());
+        println!("あなたが入力したのはこれだ！-> {}", input_from_user.trim());
         println!("ついでにスクレイピングしてみるね！");
         let fragment = get_html("https://example.com/").await.expect("HTML のデータ取得に失敗しました。");
         let selector = generate_selector("h1").expect("h1 タグのセレクタの生成に失敗しました。");
