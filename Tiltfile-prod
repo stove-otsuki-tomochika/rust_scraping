@@ -1,2 +1,8 @@
+# 自動ビルド後に実行するカスタムフックを定義
+local_resource(
+    'prune_images',
+    'docker system prune -a -f --volumes',
+    deps=['compose-prod.yaml', 'docker/Dockerfile'],  # 依存するファイルを指定
+)
 docker_compose('compose-prod.yaml')
 docker_build('web', context='.', dockerfile='docker/Dockerfile', target='prod')
