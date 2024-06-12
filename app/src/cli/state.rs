@@ -18,6 +18,10 @@ impl Waiting {
     pub fn update(&self) -> CliState {
         CliState::Running(Running {input: self.input.clone()})
     }
+
+    pub fn input(&self, input: &str) -> Waiting {
+        Waiting {input: input.to_string()}
+    }
 }
 struct Running {
     input: String
@@ -28,11 +32,11 @@ struct Exit {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use anyhow::{anyhow, Result};
 
     #[test]
     fn test_constructor_return_start() -> Result<()> {
-        use super::*;
         let state = CliState::new();
         match state {
             CliState::Waiting(_) => {
@@ -49,7 +53,6 @@ mod tests {
 
     #[test]
     fn test_running_state_called_update_from_waiting() -> Result<()> {
-        use super::*;
         let mut state = CliState::new();
         if let CliState::Waiting(waiting) = &state {
             state = waiting.update();
@@ -65,5 +68,12 @@ mod tests {
                 Err(anyhow!("state「Running」を期待しましたが Exit でした"))
             }
         }
+    }
+
+    #[test]
+    fn test_update_input_field_called_input() {
+        let state = Waiting {input: "before".to_string()};
+        let state = state.input("after");
+        assert_eq!(state.input, "after");
     }
 }
