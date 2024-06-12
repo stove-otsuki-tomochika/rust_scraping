@@ -14,8 +14,17 @@ impl CliState {
 pub struct Waiting {
     input: String
 }
-struct Running;
-struct Exit;
+impl Waiting {
+    pub fn update(&self) -> CliState {
+        CliState::Running(Running {input: self.input.clone()})
+    }
+}
+struct Running {
+    input: String
+}
+struct Exit {
+    input: String
+}
 
 #[cfg(test)]
 mod tests {
@@ -34,6 +43,26 @@ mod tests {
             }
             CliState::Exit(_) => {
                 Err(anyhow!("CliState::Exit"))
+            }
+        }
+    }
+
+    #[test]
+    fn test_running_state_called_update_from_waiting() -> Result<()> {
+        use super::*;
+        let mut state = CliState::new();
+        if let CliState::Waiting(waiting) = &state {
+            state = waiting.update();
+        }
+        match state {
+            CliState::Waiting(_) => {
+                Err(anyhow!("state「Running」を期待しましたが Waiting でした"))
+            }
+            CliState::Running(_) => {
+                Ok(())
+            }
+            CliState::Exit(_) => {
+                Err(anyhow!("state「Running」を期待しましたが Exit でした"))
             }
         }
     }
