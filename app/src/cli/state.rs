@@ -53,6 +53,12 @@ pub enum CliState<T:BufRead> {
     Running(Running<T>),
     Exit(Exit<T>),
 }
+impl<T:BufRead> CliState<T> {
+    pub fn new(stdin:T) -> Self {
+        CliState::Waiting(Waiting{input: String::new(), stdin})
+    }
+}
+
 trait State {}
 struct Waiting<T:BufRead> {
     input: String,
@@ -80,25 +86,25 @@ mod tests {
     use super::*;
     use anyhow::{anyhow, Result};
 
-    // #[test]
-    // fn test_constructor_return_start() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("");
-    //     let state = CliState::new(stdin_mock);
+    #[test]
+    fn test_constructor_return_start() -> Result<()> {
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let state = CliState::new(stdin_mock);
 
-    //     match state {
-    //         CliState::Waiting(waiting) => {
-    //             assert_eq!(waiting.input, "");
-    //             assert_eq!(waiting.stdin, stdin_mock_with_inputted_text(""));
-    //             Ok(())
-    //         }
-    //         CliState::Running(_) => {
-    //             Err(anyhow!("CliState::Running"))
-    //         }
-    //         CliState::Exit(_) => {
-    //             Err(anyhow!("CliState::Exit"))
-    //         }
-    //     }
-    // }
+        match state {
+            CliState::Waiting(waiting) => {
+                assert_eq!(waiting.input, "");
+                assert_eq!(waiting.stdin, stdin_mock_with_inputted_text(""));
+                Ok(())
+            }
+            CliState::Running(_) => {
+                Err(anyhow!("CliState::Running"))
+            }
+            CliState::Exit(_) => {
+                Err(anyhow!("CliState::Exit"))
+            }
+        }
+    }
 
     // #[test]
     // fn test_running_state_called_update_from_waiting() -> Result<()> {
