@@ -1,6 +1,8 @@
 mod scrape;
+mod cli;
 
-use std::io::{self, BufRead};
+use std::io;
+use cli::open_stdin;
 use scrape::scrape::{get_html, generate_selector};
 
 #[tokio::main]
@@ -8,12 +10,9 @@ async fn main() {
     loop {
         let mut input = String::new();
 
-        println!("何か入力してね。終了するときは「exit」って入れてね:");
+        println!("何か入力して。終了するときは「exit」って入れてね:");
 
-        io::stdin()
-            .lock()
-            .read_line(&mut input)
-            .expect("入力値が読み取れませんでした。");
+        open_stdin(io::stdin().lock(),&mut input);
 
         if input.trim() == "exit" {
             println!("終了するよ！バイバイ！");
