@@ -1,4 +1,4 @@
-enum CliState {
+pub enum CliState {
     Start,
     Running,
     Exit,
@@ -6,7 +6,7 @@ enum CliState {
 
 impl CliState {
     // コンストラクタ
-    fn new() -> Self {
+    pub fn new() -> Self {
         CliState::Start
     }
 }
