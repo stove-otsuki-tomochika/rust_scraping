@@ -89,6 +89,15 @@ impl<T:BufRead> CliState<T> {
             }
         }
     }
+
+    pub fn execute(&mut self) {
+        match self {
+            CliState::Waiting(waiting) => {
+                waiting.execute();
+            }
+            _ => {}
+        }
+    }
 }
 
 struct Waiting<T:BufRead> {
@@ -181,25 +190,18 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn test_update_input_field_called_input() {
-    //     let stdin_mock = stdin_mock_with_inputted_text("");
-    //     let mut state = Waiting::new(stdin_mock);
-    //     let state = state.input("after");
-    //     assert_eq!(state.input, "after");
-    // }
-
     #[test]
     fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
         let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
         let mut state = CliState::new(stdin_mock);
+        state.execute();
         if let CliState::Waiting(waiting) = &mut state {
-            waiting.execute();
-
             assert_eq!(waiting.input, "テスト入力");
+
             Ok(())
         } else {
             Err(anyhow!("state「Waiting」を期待しましたが違う state で実行されました"))
         }
     }
+    
 }
