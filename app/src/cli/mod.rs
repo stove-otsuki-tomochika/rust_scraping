@@ -1,3 +1,4 @@
+mod state;
 use std::io::BufRead;
 
 pub fn open_stdin<T: BufRead>(mut reader: T, input: &mut String) {
