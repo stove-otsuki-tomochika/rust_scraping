@@ -22,6 +22,10 @@ impl Waiting {
     pub fn input(&self, input: &str) -> Waiting {
         Waiting {input: input.to_string()}
     }
+
+    pub fn new() -> Waiting {
+        Waiting {input: String::new()}
+    }
 }
 struct Running {
     input: String
@@ -72,7 +76,7 @@ mod tests {
 
     #[test]
     fn test_update_input_field_called_input() {
-        let state = Waiting {input: "before".to_string()};
+        let state = Waiting::new();
         let state = state.input("after");
         assert_eq!(state.input, "after");
     }
