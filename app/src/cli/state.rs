@@ -1,5 +1,7 @@
 use std::io::BufRead;
 
+use super::io::open_stdin;
+
 // pub enum CliState<T:BufRead> {
 //     Waiting(Waiting<T>),
 //     Running(Running),
@@ -89,24 +91,29 @@ impl<T:BufRead> CliState<T> {
     }
 }
 
-trait State {}
 struct Waiting<T:BufRead> {
     input: String,
     stdin: T
 }
-impl<T:BufRead> State for Waiting<T> {}
+impl<T:BufRead> Waiting<T> {
+    pub fn execute(&mut self) {
+        self.stdin
+        .read_line(&mut self.input)
+        .expect("入力値が読み取れませんでした。");
+    }
+}
 
 struct Running<T:BufRead> {
     input: String,
     stdin: T
 }
-impl<T:BufRead> State for Running<T> {}
+impl<T:BufRead> Running<T> {}
 
 struct Exit<T:BufRead> {
     input: String,
     stdin: T
 }
-impl<T:BufRead> State for Exit<T> {}
+impl<T:BufRead> Exit<T> {}
 
 #[cfg(test)]
 mod tests {
@@ -182,15 +189,17 @@ mod tests {
     //     assert_eq!(state.input, "after");
     // }
 
-    // #[test]
-    // fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
-    //     let mut state = CliState::new(stdin_mock);
-    //     if let CliState::Waiting(waiting) = &mut state {
-    //         waiting.execute();
+    #[test]
+    fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
+        let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
+        let mut state = CliState::new(stdin_mock);
+        if let CliState::Waiting(waiting) = &mut state {
+            waiting.execute();
 
-    //         assert_eq!(waiting.input, "テスト入力");
-    //     }
-    //     Ok(())
-    // }
+            assert_eq!(waiting.input, "テスト入力");
+            Ok(())
+        } else {
+            Err(anyhow!("state「Waiting」を期待しましたが違う state で実行されました"))
+        }
+    }
 }
