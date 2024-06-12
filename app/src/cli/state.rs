@@ -5,9 +5,8 @@ pub enum CliState {
 }
 
 impl CliState {
-    // コンストラクタ
     pub fn new() -> Self {
-        CliState::Waiting(Waiting {input: String::new()})
+        CliState::Waiting(Waiting::new())
     }
 }
 
@@ -16,6 +15,9 @@ pub struct Waiting {
 }
 impl Waiting {
     pub fn update(&self) -> CliState {
+        if let "exit" = self.input.as_str() {
+            return CliState::Exit(Exit {input: self.input.clone()})
+        }
         CliState::Running(Running {input: self.input.clone()})
     }
 
@@ -79,5 +81,25 @@ mod tests {
         let state = Waiting::new();
         let state = state.input("after");
         assert_eq!(state.input, "after");
+    }
+
+    #[test]
+    fn test_change_exit_state_from_waiting() -> Result<()> {
+        let mut state = CliState::new();
+        if let CliState::Waiting(waiting) = &state {
+            let waiting = waiting.input("exit");
+            state = waiting.update();
+        }
+        match state {
+            CliState::Waiting(_) => {
+                Err(anyhow!("state「Exit」を期待しましたが Waiting でした"))
+            }
+            CliState::Running(_) => {
+                Err(anyhow!("state「Exit」を期待しましたが Running でした"))
+            }
+            CliState::Exit(_) => {
+                Ok(())
+            }
+        }
     }
 }
