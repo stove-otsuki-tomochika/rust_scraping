@@ -10,7 +10,7 @@ use cli::state::CliState;
 async fn main() {
     loop {
         let mut input_from_user = String::new();
-        let cli_state = CliState::new();
+        let cli_state = CliState::new(io::stdin().lock());
         
         match cli_state {
             CliState::Waiting(_) => {

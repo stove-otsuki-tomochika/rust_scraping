@@ -1,32 +1,36 @@
-pub enum CliState {
-    Waiting(Waiting),
+use std::io::BufRead;
+
+pub enum CliState<T:BufRead> {
+    Waiting(Waiting<T>),
     Running(Running),
     Exit(Exit),
 }
 
-impl CliState {
-    pub fn new() -> Self {
-        CliState::Waiting(Waiting::new())
+impl<T:BufRead> CliState<T> {
+    pub fn new(stdin:T) -> Self {
+        CliState::Waiting(Waiting::new(stdin))
     }
 }
 
-pub struct Waiting {
-    input: String
+pub struct Waiting<T:BufRead> {
+    input: String,
+    stdin: T
 }
-impl Waiting {
-    pub fn update(&self) -> CliState {
+impl<T:BufRead> Waiting<T> {
+    pub fn update(&self) -> CliState<T> {
         if let "exit" = self.input.as_str() {
             return CliState::Exit(Exit {input: self.input.clone()})
         }
         CliState::Running(Running {input: self.input.clone()})
     }
 
-    pub fn input(&self, input: &str) -> Waiting {
-        Waiting {input: input.to_string()}
+    pub fn input(&mut self, input: &str) -> &mut Waiting<T> {
+        self.input = input.to_string();
+        self
     }
 
-    pub fn new() -> Waiting {
-        Waiting {input: String::new()}
+    pub fn new(stdin:T) -> Waiting<T> {
+        Waiting {stdin:stdin, input: String::new()}
     }
 }
 struct Running {
@@ -38,14 +42,20 @@ struct Exit {
 
 #[cfg(test)]
 mod tests {
+    use crate::cli::test_mock::stdin_mock_with_inputted_text;
+
     use super::*;
     use anyhow::{anyhow, Result};
 
     #[test]
     fn test_constructor_return_start() -> Result<()> {
-        let state = CliState::new();
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let state = CliState::new(stdin_mock);
+
         match state {
-            CliState::Waiting(_) => {
+            CliState::Waiting(waiting) => {
+                assert_eq!(waiting.input, "");
+                assert_eq!(waiting.stdin, stdin_mock_with_inputted_text(""));
                 Ok(())
             }
             CliState::Running(_) => {
@@ -59,8 +69,9 @@ mod tests {
 
     #[test]
     fn test_running_state_called_update_from_waiting() -> Result<()> {
-        let mut state = CliState::new();
-        if let CliState::Waiting(waiting) = &state {
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let mut state = CliState::new(stdin_mock);
+        if let CliState::Waiting(waiting) = &mut state {
             state = waiting.update();
         }
         match state {
@@ -78,17 +89,18 @@ mod tests {
 
     #[test]
     fn test_update_input_field_called_input() {
-        let state = Waiting::new();
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let mut state = Waiting::new(stdin_mock);
         let state = state.input("after");
         assert_eq!(state.input, "after");
     }
 
     #[test]
     fn test_change_exit_state_from_waiting() -> Result<()> {
-        let mut state = CliState::new();
-        if let CliState::Waiting(waiting) = &state {
-            let waiting = waiting.input("exit");
-            state = waiting.update();
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let mut state = CliState::new(stdin_mock);
+        if let CliState::Waiting(waiting) = &mut state {
+            state = waiting.input("exit").update();
         }
         match state {
             CliState::Waiting(_) => {
@@ -102,4 +114,16 @@ mod tests {
             }
         }
     }
+
+    // fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
+    //     let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
+    //     let mut state = CliState::new(stdin_mock);
+    //     if let CliState::Waiting(waiting) = &state {
+    //         let mut input_from_user = String::new();
+    //         waiting.execute();
+    //         assert_eq!(input_from_user, "テスト入力");
+    //         assert_eq!(state.input, "");
+    //     }
+    //     Ok(())
+    // }
 }
