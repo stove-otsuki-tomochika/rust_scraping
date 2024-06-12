@@ -69,8 +69,8 @@ impl<T:BufRead> CliState<T> {
                 )
             }
             CliState::Running(running) => {
-                return CliState::Running(
-                    Running {
+                return CliState::Waiting(
+                    Waiting {
                         input: running.input,
                         stdin: running.stdin
                     }
@@ -110,6 +110,8 @@ impl<T:BufRead> State for Exit<T> {}
 
 #[cfg(test)]
 mod tests {
+    use std::f32::consts::E;
+
     use crate::cli::test_mock::stdin_mock_with_inputted_text;
 
     use super::*;
@@ -136,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    fn test_have_running_state_called_update_with_waiting() -> Result<()> {
+    fn test_change_running_state_from_waiting() -> Result<()> {
         let stdin_mock = stdin_mock_with_inputted_text("");
         let state = CliState::new(stdin_mock).update();
 
@@ -153,25 +155,24 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn test_running_state_called_update_from_waiting() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("");
-    //     let mut state = CliState::new(stdin_mock);
-    //     if let CliState::Waiting(waiting) = &mut state {
-    //         state = waiting.update();
-    //     }
-    //     match state {
-    //         CliState::Waiting(_) => {
-    //             Err(anyhow!("state「Running」を期待しましたが Waiting でした"))
-    //         }
-    //         CliState::Running(_) => {
-    //             Ok(())
-    //         }
-    //         CliState::Exit(_) => {
-    //             Err(anyhow!("state「Running」を期待しましたが Exit でした"))
-    //         }
-    //     }
-    // }
+    #[test]
+    fn test_change_waiting_state_from_running() -> Result<()> {
+        let stdin_mock = stdin_mock_with_inputted_text("");
+        let state = CliState::new(stdin_mock);
+        let waiting = state.update();
+
+        match waiting.update() {
+            CliState::Waiting(_) => {
+                Ok(())
+            }
+            CliState::Running(_) => {
+                Err(anyhow!("state「Waiting」を期待しましたが Running でした"))
+            }
+            CliState::Exit(_) => {
+                Err(anyhow!("state「Waiting」を期待しましたが Exit でした"))
+            }
+        }
+    }
 
     // #[test]
     // fn test_update_input_field_called_input() {
@@ -179,26 +180,6 @@ mod tests {
     //     let mut state = Waiting::new(stdin_mock);
     //     let state = state.input("after");
     //     assert_eq!(state.input, "after");
-    // }
-
-    // #[test]
-    // fn test_change_exit_state_from_waiting() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("");
-    //     let mut state = CliState::new(stdin_mock);
-    //     if let CliState::Waiting(waiting) = &mut state {
-    //         state = waiting.input("exit").update();
-    //     }
-    //     match state {
-    //         CliState::Waiting(_) => {
-    //             Err(anyhow!("state「Exit」を期待しましたが Waiting でした"))
-    //         }
-    //         CliState::Running(_) => {
-    //             Err(anyhow!("state「Exit」を期待しましたが Running でした"))
-    //         }
-    //         CliState::Exit(_) => {
-    //             Ok(())
-    //         }
-    //     }
     // }
 
     // #[test]
