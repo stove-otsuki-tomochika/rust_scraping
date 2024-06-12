@@ -32,6 +32,14 @@ impl<T:BufRead> Waiting<T> {
     pub fn new(stdin:T) -> Waiting<T> {
         Waiting {stdin:stdin, input: String::new()}
     }
+
+    pub fn execute(&mut self) {
+        let mut input_from_user = String::new();
+        self.stdin
+            .read_line(&mut input_from_user)
+            .expect("入力値が読み取れませんでした。");
+        self.input(input_from_user.trim());
+    }
 }
 struct Running {
     input: String
@@ -115,15 +123,15 @@ mod tests {
         }
     }
 
-    // fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
-    //     let mut state = CliState::new(stdin_mock);
-    //     if let CliState::Waiting(waiting) = &state {
-    //         let mut input_from_user = String::new();
-    //         waiting.execute();
-    //         assert_eq!(input_from_user, "テスト入力");
-    //         assert_eq!(state.input, "");
-    //     }
-    //     Ok(())
-    // }
+    #[test]
+    fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
+        let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
+        let mut state = CliState::new(stdin_mock);
+        if let CliState::Waiting(waiting) = &mut state {
+            waiting.execute();
+
+            assert_eq!(waiting.input, "テスト入力");
+        }
+        Ok(())
+    }
 }
