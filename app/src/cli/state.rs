@@ -4,21 +4,30 @@ enum CliState {
     Exit,
 }
 
+impl CliState {
+    // コンストラクタ
+    fn new() -> Self {
+        CliState::Start
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use anyhow::{anyhow, Result};
+
     #[test]
-    fn test_cli_state() {
+    fn test_constructor_return_start() -> Result<()> {
         use super::*;
-        let state = CliState::Start;
+        let state = CliState::new();
         match state {
             CliState::Start => {
-                println!("Start");
+                Ok(())
             }
             CliState::Running => {
-                println!("Running");
+                Err(anyhow!("CliState::Running"))
             }
             CliState::Exit => {
-                println!("Exit");
+                Err(anyhow!("CliState::Exit"))
             }
         }
     }
