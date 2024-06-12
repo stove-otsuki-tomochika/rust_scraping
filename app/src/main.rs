@@ -13,7 +13,7 @@ async fn main() {
         let cli_state = CliState::new();
         
         match cli_state {
-            CliState::Start => {
+            CliState::Waiting => {
                 println!("何か入力して。終了するときは「exit」って入れてね:");
 
                 open_stdin(io::stdin().lock(),&mut input_from_user);        

@@ -1,5 +1,5 @@
 pub enum CliState {
-    Start,
+    Waiting,
     Running,
     Exit,
 }
@@ -7,7 +7,7 @@ pub enum CliState {
 impl CliState {
     // コンストラクタ
     pub fn new() -> Self {
-        CliState::Start
+        CliState::Waiting
     }
 }
 
@@ -20,7 +20,7 @@ mod tests {
         use super::*;
         let state = CliState::new();
         match state {
-            CliState::Start => {
+            CliState::Waiting => {
                 Ok(())
             }
             CliState::Running => {
