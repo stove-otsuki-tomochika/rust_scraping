@@ -1,10 +1,29 @@
 use crate::scrape::scrape::{generate_selector, get_html};
-use super::{waiting::Waiting, CliState};
+use super::{waiting::Waiting, CliState, Transitioning};
 
 pub struct Running {}
 impl CliState<Running> {
-    pub fn update(self) -> CliState<Waiting> {
-        CliState {_state: Waiting{},input:String::new(), html: self.html, stdin: self.stdin}
+    pub fn update(self) -> Transitioning {
+        // input が "exit" の場合は Transition::Exit を返す
+        if self.input.trim() == "exit" {
+            return Transitioning::Exit(
+                CliState {
+                    _state: super::exit::Exit{},
+                    input: self.input,
+                    html: self.html,
+                    stdin: self.stdin
+                }
+            )
+        }
+        Transitioning::Waiting(
+            CliState {
+                _state: Waiting{},
+                input:String::new(),
+                html: self.html,
+                stdin: self.stdin
+            }
+        )
+        
     }
 
     // TODO エラーハンドリングが適当なので何とかする

@@ -1,9 +1,7 @@
 use std::io::BufRead;
-use anyhow::{Context,Result};
 
-use crate::scrape::scrape::{generate_selector, get_html};
 
-use super::{io::open_stdin, states::{CliState}};
+use super::states::{CliState, Transitioning};
 use super::states::waiting::Waiting;
 use super::states::running::Running;
 use super::states::exit::Exit;
@@ -26,26 +24,22 @@ impl CliStateMachine {
             },
             CliStateMachine::Running(mut running) => {
                 running.execute().await;
-                CliStateMachine::Waiting(running.update())
+                running.update().into()
             },
             _ => self
         }
     }
+}
 
-    // pub async fn execute(mut self) -> Self {
-    //     self = match self {
-    //         CliState::Waiting(mut waiting) => {
-    //             waiting.execute();
-    //             CliState::Waiting(waiting)
-    //         }
-    //         CliState::Running(mut running) => {
-    //             running.execute().await;
-    //             CliState::Running(running)
-    //         }
-    //         _ => self,
-    //     };
-    //     self
-    // }
+// Transitioning から CliStateMachine に変換する
+// Waiting と Exit の2パターンに分岐
+impl From<Transitioning> for CliStateMachine {
+    fn from(transitioning: Transitioning) -> Self {
+        match transitioning {
+            Transitioning::Waiting(waiting) => CliStateMachine::Waiting(waiting),
+            Transitioning::Exit(exit) => CliStateMachine::Exit(exit),
+        }
+    }
 }
 
 
@@ -123,5 +117,23 @@ mod tests {
             }
         }
         Ok(())
+    }
+
+    // input に "exit" がある状態で Running から execute を呼び出すと、Exit 状態に遷移する
+    #[tokio::test]
+    async fn test_change_exit_from_running_when_input_exit() -> Result<()> {
+        let stdin_mock = _stdin_mock_with_inputted_text("exit");
+        let waiting = CliStateMachine::new(Box::new(stdin_mock));
+        let running = waiting.execute().await;
+        let exit = running.execute().await;
+
+        match exit {
+            CliStateMachine::Exit(_) => {
+                Ok(())
+            }
+            _ => {
+                Err(anyhow!("state「Exit」を期待しましたが違う state で実行されました"))
+            }
+        }
     }
 }
