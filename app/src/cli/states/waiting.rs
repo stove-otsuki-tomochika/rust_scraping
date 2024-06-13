@@ -8,12 +8,13 @@ impl CliState<Waiting> {
         CliState {
             _state: state,
             input: String::new(),
+            html: vec![],
             stdin: stdin
         }
     }
 
     pub fn update(self) -> CliState<Running> {
-        CliState {_state: Running{}, input:self.input, stdin: self.stdin}
+        CliState {_state: Running{}, input:self.input, html: self.html, stdin: self.stdin}
     }
 
     pub fn execute(&mut self) {

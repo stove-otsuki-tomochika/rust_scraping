@@ -18,13 +18,14 @@ impl CliStateMachine {
         CliStateMachine::Waiting(CliState::new(Waiting{}, stdin))
     }
 
-    pub fn execute(self) -> Self {
+    pub async fn execute(self) -> Self {
         match self {
             CliStateMachine::Waiting(mut waiting) => {
                 waiting.execute();
                 CliStateMachine::Running(waiting.update())
             },
-            CliStateMachine::Running(running) => {
+            CliStateMachine::Running(mut running) => {
+                running.execute().await;
                 CliStateMachine::Waiting(running.update())
             },
             _ => self
@@ -73,12 +74,12 @@ mod tests {
 
     // Waiting 状態で execute を呼び出すと標準入力からの入力を受け付け、
     // それを保持して Running 状態に遷移する
-    #[test]
-    fn test_open_stdin_and_change_running_state_from_waiting() -> Result<()> {
+    #[tokio::test]
+    async fn test_open_stdin_and_change_running_state_from_waiting() -> Result<()> {
         let stdin_mock = _stdin_mock_with_inputted_text("テスト入力");
         let state_machine = CliStateMachine::new(Box::new(stdin_mock));
 
-        match state_machine.execute() {
+        match state_machine.execute().await {
             CliStateMachine::Running(running) => {
                 assert_eq!(running.input, "テスト入力");
                 Ok(())
@@ -90,13 +91,13 @@ mod tests {
     }
 
     // Running 状態で execute を呼び出すと、Waiting 状態に遷移する
-    #[test]
-    fn test_change_waiting_state_from_running() -> Result<()> {
+    #[tokio::test]
+    async fn test_change_waiting_state_from_running() -> Result<()> {
         let stdin_mock = _stdin_mock_with_inputted_text("");
         let waiting = CliStateMachine::new(Box::new(stdin_mock));
-        let running = waiting.execute();
+        let running = waiting.execute().await;
 
-        match running.execute() {
+        match running.execute().await {
             CliStateMachine::Waiting(_) => {
                 Ok(())
             }
@@ -106,22 +107,21 @@ mod tests {
         }
     }
 
-    // // running 状態で execute を呼び出すと、スクレイピング処理が実行される
-    // #[tokio::test]
-    // async fn test_scrape_called_execute_from_running() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
-    //     let waiting_state: CliState<std::io::Cursor<&str>> = CliState::new(stdin_mock);
-    //     let running_state = waiting_state.execute().await.update();
+    // running 状態で execute を呼び出すと、スクレイピング処理が実行される
+    #[tokio::test]
+    async fn test_scrape_called_execute_from_running() -> Result<()> {
+        let stdin_mock = _stdin_mock_with_inputted_text("テスト入力");
+        let waiting = CliStateMachine::new(Box::new(stdin_mock));
+        let running = waiting.execute().await;
 
-    //     match running_state.execute().await {
-    //         CliState::Running(running) => {
-    //             assert_eq!(running.input, "Example Domain");
-
-    //             Ok(())
-    //         }
-    //         _ => {
-    //             Err(anyhow!("state「Running」を期待しましたが違う state で実行されました"))
-    //         }
-    //     }
-    // }
+        match running.execute().await {
+            CliStateMachine::Waiting(waiting) => {
+                assert_eq!(waiting.html[0], "Example Domain");
+            }
+            _ => {
+                return Err(anyhow!("state「Waiting」を期待しましたが違う state で実行されました"));
+            }
+        }
+        Ok(())
+    }
 }
