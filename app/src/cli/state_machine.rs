@@ -102,10 +102,10 @@ mod tests {
         }
     }
 
-    // running 状態で execute を呼び出すと、スクレイピング処理が実行される
+    // running 状態かつ input が "scrape" の時に execute を呼び出すと、スクレイピング処理が実行される
     #[tokio::test]
-    async fn test_scrape_called_execute_from_running() -> Result<()> {
-        let stdin_mock = _stdin_mock_with_inputted_text("テスト入力");
+    async fn test_scrape_called_execute_from_running_when_input_scrape() -> Result<()> {
+        let stdin_mock = _stdin_mock_with_inputted_text("scrape");
         let waiting = CliStateMachine::new(Box::new(stdin_mock));
         let running = waiting.execute().await;
 

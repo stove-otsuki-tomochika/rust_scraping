@@ -28,7 +28,19 @@ impl CliState<Running> {
 
     // TODO エラーハンドリングが適当なので何とかする
     pub async fn execute(&mut self){
-        println!("HTML の取得中...");
-        self.html = fetch_inner_html_into_vec("https://example.com/", "h1").await.expect("h1 タグの中身の取得に失敗しました。");
+        match &mut self.input {
+            // "scrape" と入力されていたら、html を取得する
+            input if input.trim() == "scrape" => {
+                self.html = fetch_inner_html_into_vec("https://example.com/","h1").await.expect("HTML の取得に失敗しました。");
+            },
+            // "exit" と入力されていたら、終了する
+            input if input.trim() == "exit" => {
+                println!("終了します。");
+            },
+            // それ以外の入力は help を表示
+            _ => {
+                println!("scrape と入力すると HTML を取得できます。")
+            }
+        }
     }
 }
