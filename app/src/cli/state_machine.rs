@@ -18,36 +18,14 @@ impl CliStateMachine {
         CliStateMachine::Waiting(CliState::new(Waiting{}, stdin))
     }
 
-    // pub fn update(mut self) -> Self {
-    //     self = match self {
-    //         CliState::Waiting(waiting) => {
-    //             CliState::Running(
-    //                 Running {
-    //                     input: waiting.input,
-    //                     stdin: waiting.stdin
-    //                 }
-    //             )
-    //         }
-    //         CliState::Running(running) => {
-    //             CliState::Waiting(
-    //                 Waiting {
-    //                     input: running.input,
-    //                     stdin: running.stdin
-    //                 }
-    //             )
-    //         }
-    //         CliState::Exit(exit) => {
-    //             // TODO エラーにするべき
-    //             CliState::Running(
-    //                 Running {
-    //                     input: exit.input,
-    //                     stdin: exit.stdin
-    //                 }
-    //             )
-    //         }
-    //     };
-    //     self
-    // }
+    pub fn update(self) -> Self {
+        match self {
+            CliStateMachine::Waiting(waiting) => {
+                CliStateMachine::Running(waiting.update())
+            },
+            _ => self
+        }
+    }
 
     // pub async fn execute(mut self) -> Self {
     //     self = match self {
@@ -88,23 +66,20 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn test_change_running_state_from_waiting() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("");
-    //     let state = CliState::new(stdin_mock).update();
+    #[test]
+    fn test_change_running_state_from_waiting() -> Result<()> {
+        let stdin_mock = _stdin_mock_with_inputted_text("");
+        let state_machine = CliStateMachine::new(Box::new(stdin_mock));
 
-    //     match state {
-    //         CliState::Waiting(_) => {
-    //             Err(anyhow!("state「Running」を期待しましたが Waiting でした"))
-    //         }
-    //         CliState::Running(_) => {
-    //             Ok(())
-    //         }
-    //         CliState::Exit(_) => {
-    //             Err(anyhow!("state「Running」を期待しましたが Exit でした"))
-    //         }
-    //     }
-    // }
+        match state_machine.update() {
+            CliStateMachine::Running(_) => {
+                Ok(())
+            }
+            _ => {
+                Err(anyhow!("state「Waiting」を期待しましたが違う state で実行されました"))
+            }
+        }
+    }
 
     // #[test]
     // fn test_change_waiting_state_from_running() -> Result<()> {

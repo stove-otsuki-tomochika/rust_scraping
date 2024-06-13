@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use super::CliState;
+use super::{running::Running, CliState};
 
 pub struct Waiting {}
 impl CliState<Waiting> {
@@ -10,6 +10,10 @@ impl CliState<Waiting> {
             input: String::new(),
             stdin: stdin
         }
+    }
+
+    pub fn update(self) -> CliState<Running> {
+        CliState {_state: Running{},input:String::new() , stdin: self.stdin}
     }
 
     // pub fn execute(&mut self) {
