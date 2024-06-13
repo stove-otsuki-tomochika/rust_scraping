@@ -3,55 +3,10 @@ use anyhow::{Context,Result};
 
 use crate::scrape::scrape::{generate_selector, get_html};
 
-use super::io::open_stdin;
-
-// pub enum CliState<T:BufRead> {
-//     Waiting(Waiting<T>),
-//     Running(Running),
-//     Exit(Exit),
-// }
-
-// impl<T:BufRead> CliState<T> {
-//     pub fn new(stdin:T) -> Self {
-//         CliState::Waiting(Waiting::new(stdin))
-//     }
-// }
-
-// pub struct Waiting<T:BufRead> {
-//     input: String,
-//     stdin: T
-// }
-// impl<T:BufRead> Waiting<T> {
-//     pub fn update(&self) -> CliState<T> {
-//         if let "exit" = self.input.as_str() {
-//             return CliState::Exit(Exit {input: self.input.clone()})
-//         }
-//         CliState::Running(Running {input: self.input.clone()})
-//     }
-
-//     pub fn input(&mut self, input: &str) -> &mut Waiting<T> {
-//         self.input = input.to_string();
-//         self
-//     }
-
-//     pub fn new(stdin:T) -> Waiting<T> {
-//         Waiting {stdin:stdin, input: String::new()}
-//     }
-
-//     pub fn execute(&mut self) {
-//         let mut input_from_user = String::new();
-//         self.stdin
-//             .read_line(&mut input_from_user)
-//             .expect("入力値が読み取れませんでした。");
-//         self.input(input_from_user.trim());
-//     }
-// }
-// struct Running {
-//     input: String
-// }
-// struct Exit {
-//     input: String
-// }
+use super::{io::open_stdin, states::{CliState}};
+use super::states::waiting::Waiting;
+use super::states::running::Running;
+use super::states::exit::Exit;
 
 pub enum CliStateMachine {
     Waiting(CliState<Waiting>),
@@ -110,63 +65,17 @@ impl CliStateMachine {
     // }
 }
 
-struct CliState<T> {
-    _state:T,
-    input: String,
-    stdin: Box<dyn BufRead>
-}
-impl CliState<Waiting> {
-    pub fn new(state:Waiting, stdin:Box<dyn BufRead>) -> Self {
-        CliState {
-            _state: state,
-            input: String::new(),
-            stdin: stdin
-        }
-    }
-}
-impl CliState<Running> {}
-impl CliState<Exit> {}
-
-struct Waiting {}
-impl Waiting{
-    // pub fn execute(&mut self) {
-    //     self.stdin
-    //     .read_line(&mut self.input)
-    //     .expect("入力値が読み取れませんでした。");
-    // }
-}
-
-struct Running {}
-impl Running {
-    // // 上流のエラーハンドリングが適当なので何とかする
-    // pub async fn execute(&mut self) -> Result<()>{
-    //     let fragment = get_html("https://example.com/").await.context("HTML のデータ取得に失敗しました。")?;
-    //     let selector = generate_selector("h1").context("h1 タグのセレクタの生成に失敗しました。")?;
-    //     let mut html = String::new();
-
-    //     for element in fragment.select(&selector) {
-    //         // example.com の h1 タグの中身は "Example Domain" なので、これを検証する
-    //         println!("{}", element.inner_html());
-    //         html.push_str(&element.inner_html());
-    //     }
-    //     self.input = html;
-
-    //     Ok(())
-    // }
-}
-
-struct Exit {}
 
 #[cfg(test)]
 mod tests {
-    use crate::{cli::test_mock::stdin_mock_with_inputted_text, scrape::scrape::{generate_selector, get_html}};
+    use crate::{cli::test_mock::_stdin_mock_with_inputted_text, scrape::scrape::{generate_selector, get_html}};
 
     use super::*;
     use anyhow::{anyhow, Result};
 
     #[test]
     fn test_constructor_return_start() -> Result<()> {
-        let stdin_mock = stdin_mock_with_inputted_text("");
+        let stdin_mock = _stdin_mock_with_inputted_text("");
         let state_machine = CliStateMachine::new(Box::new(stdin_mock));  
         
         match state_machine {

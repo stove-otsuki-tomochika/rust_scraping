@@ -8,13 +8,13 @@ pub fn open_stdin<T: BufRead>(mut reader: T, input: &mut String) {
 
 #[cfg(test)]
 mod tests {
-    use crate::cli::test_mock::stdin_mock_with_inputted_text;
+    use crate::cli::test_mock::_stdin_mock_with_inputted_text;
     use super::*;
 
     // open_stdin を使うと、標準入力が開ける
     #[test]
     fn test_open_stdin() {
-        let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
+        let stdin_mock = _stdin_mock_with_inputted_text("テスト入力");
         let mut input_from_user = String::new();
 
         open_stdin(stdin_mock, &mut input_from_user);
