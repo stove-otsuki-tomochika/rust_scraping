@@ -26,6 +26,8 @@ impl CliStateMachine {
                 running.execute().await;
                 running.update().into()
             },
+
+            // TODO エラーが返るようにする
             _ => self
         }
     }
