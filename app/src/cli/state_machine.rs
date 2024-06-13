@@ -18,7 +18,7 @@ impl CliStateMachine {
         CliStateMachine::Waiting(CliState::new(Waiting{}, stdin))
     }
 
-    pub fn update(self) -> Self {
+    pub fn execute(self) -> Self {
         match self {
             CliStateMachine::Waiting(waiting) => {
                 CliStateMachine::Running(waiting.update())
@@ -74,7 +74,7 @@ mod tests {
         let stdin_mock = _stdin_mock_with_inputted_text("");
         let state_machine = CliStateMachine::new(Box::new(stdin_mock));
 
-        match state_machine.update() {
+        match state_machine.execute() {
             CliStateMachine::Running(_) => {
                 Ok(())
             }
@@ -88,9 +88,9 @@ mod tests {
     fn test_change_waiting_state_from_running() -> Result<()> {
         let stdin_mock = _stdin_mock_with_inputted_text("");
         let waiting = CliStateMachine::new(Box::new(stdin_mock));
-        let running = waiting.update();
+        let running = waiting.execute();
 
-        match running.update() {
+        match running.execute() {
             CliStateMachine::Waiting(_) => {
                 Ok(())
             }
