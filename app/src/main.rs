@@ -2,8 +2,7 @@ mod scrape;
 mod cli;
 
 use std::io;
-use cli::{io::open_stdin, state_machine::{self, CliStateMachine}};
-use scrape::scrape::{get_html, generate_selector};
+use cli::state_machine::CliStateMachine;
 
 #[tokio::main]
 async fn main() {

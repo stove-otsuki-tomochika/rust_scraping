@@ -47,7 +47,7 @@ impl From<Transitioning> for CliStateMachine {
 
 #[cfg(test)]
 mod tests {
-    use crate::{cli::{states::running, test_mock::_stdin_mock_with_inputted_text}, scrape::scrape::{generate_selector, get_html}};
+    use crate::cli::test_mock::_stdin_mock_with_inputted_text;
 
     use super::*;
     use anyhow::{anyhow, Result};

@@ -28,7 +28,7 @@ impl CliState<Waiting> {
 mod tests {
     use super::*;
     use crate::cli::test_mock::_stdin_mock_with_inputted_text;
-    use anyhow::{anyhow, Result};
+    use anyhow::Result;
 
     #[tokio::test]
     async fn test_open_stdin_called_execute() -> Result<()> {
