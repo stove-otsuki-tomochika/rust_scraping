@@ -12,7 +12,7 @@ pub enum CliStateMachine {
     Exit(CliState<Exit>),
 }
 impl CliStateMachine {
-    fn new(stdin: Box<dyn BufRead>) -> Self {
+    pub fn new(stdin: Box<dyn BufRead>) -> Self {
         CliStateMachine::Waiting(CliState::new(Waiting{}, stdin))
     }
 

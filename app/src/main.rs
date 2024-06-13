@@ -2,36 +2,16 @@ mod scrape;
 mod cli;
 
 use std::io;
-use cli::io::open_stdin;
+use cli::{io::open_stdin, state_machine::{self, CliStateMachine}};
 use scrape::scrape::{get_html, generate_selector};
-// use cli::state::CliState;
 
 #[tokio::main]
 async fn main() {
+    let mut state_machine = CliStateMachine::new(Box::new(io::stdin().lock()));
     loop {
-        // let mut input_from_user = String::new();
-        // let cli_state = CliState::new(io::stdin().lock());
-        
-        // match cli_state {
-        //     CliState::Waiting(_) => {
-        //         println!("何か入力して。終了するときは「exit」って入れてね:");
-
-        //         open_stdin(io::stdin().lock(),&mut input_from_user);        
-        //     },
-        //     _ => {}
-        // }
-        // if input_from_user.trim() == "exit" {
-        //     println!("終了するよ！バイバイ！");
-        //     break;
-        // }
-        // println!("あなたが入力したのはこれだ！-> {}", input_from_user.trim());
-        // println!("ついでにスクレイピングしてみるね！");
-        // let fragment = get_html("https://example.com/").await.expect("HTML のデータ取得に失敗しました。");
-        // let selector = generate_selector("h1").expect("h1 タグのセレクタの生成に失敗しました。");
-
-        // for element in fragment.select(&selector) {
-        //     // example.com の h1 タグの中身は "Example Domain" なので、これを検証する
-        //     println!("{}", element.inner_html());
-        // }
+        state_machine = state_machine.execute().await;
+        if let CliStateMachine::Exit(_)  = state_machine {
+            break;
+        }
     }
 }
