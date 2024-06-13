@@ -127,8 +127,7 @@ impl CliState<Waiting> {
 impl CliState<Running> {}
 impl CliState<Exit> {}
 
-struct Waiting {
-}
+struct Waiting {}
 impl Waiting{
     // pub fn execute(&mut self) {
     //     self.stdin
@@ -137,10 +136,7 @@ impl Waiting{
     // }
 }
 
-struct Running {
-    input: String,
-    stdin: Box<dyn BufRead>
-}
+struct Running {}
 impl Running {
     // // 上流のエラーハンドリングが適当なので何とかする
     // pub async fn execute(&mut self) -> Result<()>{
@@ -159,11 +155,7 @@ impl Running {
     // }
 }
 
-struct Exit {
-    input: String,
-    stdin: Box<dyn BufRead>
-}
-impl Exit {}
+struct Exit {}
 
 #[cfg(test)]
 mod tests {
