@@ -13,7 +13,7 @@ impl CliState<Waiting> {
     }
 
     pub fn update(self) -> CliState<Running> {
-        CliState {_state: Running{},input:String::new() , stdin: self.stdin}
+        CliState {_state: Running{}, input:self.input, stdin: self.stdin}
     }
 
     pub fn execute(&mut self) {

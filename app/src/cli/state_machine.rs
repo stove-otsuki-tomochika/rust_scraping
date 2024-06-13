@@ -20,7 +20,8 @@ impl CliStateMachine {
 
     pub fn execute(self) -> Self {
         match self {
-            CliStateMachine::Waiting(waiting) => {
+            CliStateMachine::Waiting(mut waiting) => {
+                waiting.execute();
                 CliStateMachine::Running(waiting.update())
             },
             CliStateMachine::Running(running) => {
@@ -49,7 +50,7 @@ impl CliStateMachine {
 
 #[cfg(test)]
 mod tests {
-    use crate::{cli::test_mock::_stdin_mock_with_inputted_text, scrape::scrape::{generate_selector, get_html}};
+    use crate::{cli::{states::running, test_mock::_stdin_mock_with_inputted_text}, scrape::scrape::{generate_selector, get_html}};
 
     use super::*;
     use anyhow::{anyhow, Result};
@@ -70,12 +71,13 @@ mod tests {
     }
 
     #[test]
-    fn test_change_running_state_from_waiting() -> Result<()> {
-        let stdin_mock = _stdin_mock_with_inputted_text("");
+    fn test_open_stdin_and_change_running_state_from_waiting() -> Result<()> {
+        let stdin_mock = _stdin_mock_with_inputted_text("テスト入力");
         let state_machine = CliStateMachine::new(Box::new(stdin_mock));
 
         match state_machine.execute() {
-            CliStateMachine::Running(_) => {
+            CliStateMachine::Running(running) => {
+                assert_eq!(running.input, "テスト入力");
                 Ok(())
             }
             _ => {

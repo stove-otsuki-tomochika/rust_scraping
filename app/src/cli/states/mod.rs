@@ -5,6 +5,6 @@ pub mod exit;
 
 pub struct CliState<T> {
     _state:T,
-    input: String,
+    pub input: String,
     stdin: Box<dyn BufRead>
 }
