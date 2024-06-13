@@ -23,6 +23,9 @@ impl CliStateMachine {
             CliStateMachine::Waiting(waiting) => {
                 CliStateMachine::Running(waiting.update())
             },
+            CliStateMachine::Running(running) => {
+                CliStateMachine::Waiting(running.update())
+            },
             _ => self
         }
     }
@@ -81,24 +84,21 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn test_change_waiting_state_from_running() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("");
-    //     let state = CliState::new(stdin_mock);
-    //     let waiting = state.update();
+    #[test]
+    fn test_change_waiting_state_from_running() -> Result<()> {
+        let stdin_mock = _stdin_mock_with_inputted_text("");
+        let waiting = CliStateMachine::new(Box::new(stdin_mock));
+        let running = waiting.update();
 
-    //     match waiting.update() {
-    //         CliState::Waiting(_) => {
-    //             Ok(())
-    //         }
-    //         CliState::Running(_) => {
-    //             Err(anyhow!("state「Waiting」を期待しましたが Running でした"))
-    //         }
-    //         CliState::Exit(_) => {
-    //             Err(anyhow!("state「Waiting」を期待しましたが Exit でした"))
-    //         }
-    //     }
-    // }
+        match running.update() {
+            CliStateMachine::Waiting(_) => {
+                Ok(())
+            }
+            _ => {
+                Err(anyhow!("state「Waiting」を期待しましたが違う state で実行されました"))
+            }
+        }
+    }
 
     // #[tokio::test]
     // async fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
