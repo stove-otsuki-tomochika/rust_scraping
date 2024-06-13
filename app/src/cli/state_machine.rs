@@ -55,8 +55,9 @@ mod tests {
     use super::*;
     use anyhow::{anyhow, Result};
 
+    // CliStateMachine のコンストラクタを呼び出すと、Waiting 状態から始まる
     #[test]
-    fn test_constructor_return_start() -> Result<()> {
+    fn test_constructor_return_waiting_state() -> Result<()> {
         let stdin_mock = _stdin_mock_with_inputted_text("");
         let state_machine = CliStateMachine::new(Box::new(stdin_mock));  
         
@@ -70,6 +71,8 @@ mod tests {
         }
     }
 
+    // Waiting 状態で execute を呼び出すと標準入力からの入力を受け付け、
+    // それを保持して Running 状態に遷移する
     #[test]
     fn test_open_stdin_and_change_running_state_from_waiting() -> Result<()> {
         let stdin_mock = _stdin_mock_with_inputted_text("テスト入力");
@@ -86,6 +89,7 @@ mod tests {
         }
     }
 
+    // Running 状態で execute を呼び出すと、Waiting 状態に遷移する
     #[test]
     fn test_change_waiting_state_from_running() -> Result<()> {
         let stdin_mock = _stdin_mock_with_inputted_text("");
@@ -101,20 +105,6 @@ mod tests {
             }
         }
     }
-
-    // #[tokio::test]
-    // async fn test_open_stdin_called_execute_from_waiting() -> Result<()> {
-    //     let stdin_mock = stdin_mock_with_inputted_text("テスト入力");
-    //     let state = CliState::new(stdin_mock);
-
-    //     if let CliState::Waiting(waiting) = state.execute().await {
-    //         assert_eq!(waiting.input, "テスト入力");
-
-    //         Ok(())
-    //     } else {
-    //         Err(anyhow!("state「Waiting」を期待しましたが違う state で実行されました"))
-    //     }
-    // }
 
     // // running 状態で execute を呼び出すと、スクレイピング処理が実行される
     // #[tokio::test]
@@ -134,5 +124,4 @@ mod tests {
     //         }
     //     }
     // }
-    
 }
