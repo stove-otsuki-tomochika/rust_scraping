@@ -1,4 +1,4 @@
-use crate::scrape::scrape::{generate_selector, get_html};
+use crate::scrape::scrape::fetch_inner_html_into_vec;
 use super::{waiting::Waiting, CliState, Transitioning};
 
 pub struct Running {}
@@ -29,15 +29,6 @@ impl CliState<Running> {
     // TODO エラーハンドリングが適当なので何とかする
     pub async fn execute(&mut self){
         println!("HTML の取得中...");
-        let fragment = get_html("https://example.com/").await.expect("HTML のデータ取得に失敗しました。");
-        let selector = generate_selector("h1").expect("h1 タグのセレクタの生成に失敗しました。");
-        let mut html = vec![];
-
-        for element in fragment.select(&selector) {
-            // example.com の h1 タグの中身は "Example Domain" なので、これを検証する
-            println!("{}", element.inner_html());
-            html.push(element.inner_html());
-        }
-        self.html = html;
+        self.html = fetch_inner_html_into_vec("https://example.com/", "h1").await.expect("h1 タグの中身の取得に失敗しました。");
     }
 }
