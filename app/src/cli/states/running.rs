@@ -28,6 +28,7 @@ impl CliState<Running> {
 
     // TODO エラーハンドリングが適当なので何とかする
     pub async fn execute(&mut self){
+        println!("HTML の取得中...");
         let fragment = get_html("https://example.com/").await.expect("HTML のデータ取得に失敗しました。");
         let selector = generate_selector("h1").expect("h1 タグのセレクタの生成に失敗しました。");
         let mut html = vec![];

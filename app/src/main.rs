@@ -10,6 +10,7 @@ async fn main() {
     loop {
         state_machine = state_machine.execute().await;
         if let CliStateMachine::Exit(_)  = state_machine {
+            println!("終了します。");
             break;
         }
     }

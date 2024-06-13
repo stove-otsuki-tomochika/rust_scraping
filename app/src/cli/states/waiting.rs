@@ -18,6 +18,7 @@ impl CliState<Waiting> {
     }
 
     pub fn execute(&mut self) {
+        println!("URLを入力してください。");
         self.stdin
         .read_line(&mut self.input)
         .expect("入力値が読み取れませんでした。");
