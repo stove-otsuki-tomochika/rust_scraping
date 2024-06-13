@@ -1,20 +1,16 @@
-use std::io::{self, BufRead};
+mod scrape;
+mod cli;
 
-fn main() {
+use std::io;
+use cli::state_machine::CliStateMachine;
+
+#[tokio::main]
+async fn main() {
+    let mut state_machine = CliStateMachine::new(Box::new(io::stdin().lock()));
     loop {
-        let mut input = String::new();
-
-        println!("何か入力してね。終了するときは「exit」って入れてね:");
-
-        io::stdin()
-            .lock()
-            .read_line(&mut input)
-            .expect("入力値が読み取れませんでした。");
-
-        if input.trim() == "exit" {
-            println!("終了します。");
+        state_machine = state_machine.execute().await;
+        if let CliStateMachine::Exit(_)  = state_machine {
             break;
         }
-        println!("あなたが入力したのはこれだ！-> {}", input.trim());
     }
 }
