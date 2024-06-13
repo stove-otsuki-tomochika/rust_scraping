@@ -4,7 +4,7 @@ mod cli;
 use std::io;
 use cli::io::open_stdin;
 use scrape::scrape::{get_html, generate_selector};
-use cli::state::CliState;
+// use cli::state::CliState;
 
 #[tokio::main]
 async fn main() {
