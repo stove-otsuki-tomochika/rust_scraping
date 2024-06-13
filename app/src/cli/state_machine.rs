@@ -1,6 +1,5 @@
 use std::io::BufRead;
 
-
 use super::states::{CliState, Transitioning};
 use super::states::waiting::Waiting;
 use super::states::running::Running;
